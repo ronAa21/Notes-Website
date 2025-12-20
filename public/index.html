@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Ubuntu", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(180deg, #2d1b4e 0%, #1a1030 100%);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(168, 85, 156, 0.4) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #a8559c 0%, #7d3f7a 100%);
+      padding: 60px 40px;
+      border-radius: 0 0 200px 200px;
+      margin: -40px -30px 60px -30px;
+      box-shadow: 0 10px 40px rgba(168, 85, 156, 0.3);
+    }
+
+    h1 {
+      color: white;
+      font-size: 48px;
+      font-weight: 400;
+      letter-spacing: 2px;
+      margin: 0;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-wrapper {
+      background: linear-gradient(135deg, #a8559c 0%, #8a4a84 100%);
+      border-radius: 50px;
+      padding: 18px 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 4px 15px rgba(168, 85, 156, 0.2);
+      transition: all 0.3s;
+    }
+
+    .input-wrapper:focus-within {
+      box-shadow: 0 6px 25px rgba(168, 85, 156, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 18px;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 300;
+    }
+
+    .register-link {
+      color: white;
+      font-size: 16px;
+      margin: 30px 0;
+    }
+
+    .register-link a {
+      color: #e89ed6;
+      text-decoration: none;
+      font-weight: 500;
+      margin-left: 10px;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+
+    .submit-btn {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #a8559c 0%, #8a4a84 100%);
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(168, 85, 156, 0.4);
+      transition: all 0.3s;
+    }
+
+    .submit-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 10px 35px rgba(168, 85, 156, 0.6);
+    }
+
+    .submit-btn:active {
+      transform: scale(1.05);
+    }
+
+    .submit-btn svg {
+      width: 36px;
+      height: 36px;
+      color: #2d1b4e;
+      margin-left: 4px;
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 14px;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.success {
+      background: rgba(76, 175, 80, 0.2);
+      color: #81c784;
+      border: 1px solid rgba(129, 199, 132, 0.3);
+    }
+
+    .message.error {
+      background: rgba(244, 67, 54, 0.2);
+      color: #e57373;
+      border: 1px solid rgba(229, 115, 115, 0.3);
+    }
+
+    .decoration {
+      position: absolute;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .decoration.left {
+      bottom: 50px;
+      left: -30px;
+      font-size: 120px;
+      color: #a8559c;
+    }
+
+    .decoration.right {
+      bottom: 100px;
+      right: -20px;
+      font-size: 140px;
+      color: #a8559c;
+    }
+  </style>
+</head>
+<body>
+  <div class="decoration left">♪</div>
+  <div class="decoration right">♪</div>
+  
+  <div class="container">
+    <div class="header">
+      <h1>Login</h1>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <input type="email" id="email" placeholder="Email Address" required>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <input type="password" id="password" placeholder="Password" required>
+      </div>
+    </div>
+
+    <div class="register-link">
+      Don't have an Account? <a href="register.html">Sign up</a>
+    </div>
+
+    <button class="submit-btn" onclick="handleLogin()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    // Function to validate email format
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const messageEl = document.getElementById('message');
+
+      messageEl.style.display = 'none';
+      messageEl.className = 'message';
+
+      if (!email || !password) {
+        showMessage('Please fill in all fields', 'error');
+        return;
+      }
+
+      // Check if email format is valid
+      if (!validateEmail(email)) {
+        showMessage('Please enter a valid email address', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showMessage('Password must be at least 6 characters', 'error');
+        return;
+      }
+
+      fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      })
+        .then(async res => {
+          const data = await res.json();
+          if(!res.ok) throw new Error(data.message);
+          return data;
+        })
+        .then(data => {
+          if(data.token) {
+            localStorage.setItem("token", data.token);
+            showMessage('Login successful!', 'success');
+
+            setTimeout(() => {
+              document.getElementById('email').value = '';
+              document.getElementById('password').value = '';
+              messageEl.style.display = 'none';
+            }, 2000);
+
+            setTimeout(() => {
+              window.location.href = "notes.html"
+            }, 1000)
+          } else {
+            showMessage(data.message || "Login failed", "error"); 
+          }
+        })
+    }
+
+    function showMessage(text, type) {
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = text;
+      messageEl.className = `message ${type}`;
+      messageEl.style.display = 'block';
+    }
+
+    document.getElementById('email').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        handleLogin();
+      }
+    });
+
+    document.getElementById('password').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        handleLogin();
+      }
+    });
+  </script>
+</body>
+</html>

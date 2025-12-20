@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Ubuntu", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(180deg, #2d1b4e 0%, #1a1030 100%);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(168, 85, 156, 0.4) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #a8559c 0%, #7d3f7a 100%);
+      padding: 60px 40px;
+      border-radius: 0 0 200px 200px;
+      margin: -40px -30px 60px -30px;
+      box-shadow: 0 10px 40px rgba(168, 85, 156, 0.3);
+    }
+
+    h1 {
+      color: white;
+      font-size: 48px;
+      font-weight: 400;
+      letter-spacing: 2px;
+      margin: 0;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-wrapper {
+      background: linear-gradient(135deg, #a8559c 0%, #8a4a84 100%);
+      border-radius: 50px;
+      padding: 18px 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 4px 15px rgba(168, 85, 156, 0.2);
+      transition: all 0.3s;
+    }
+
+    .input-wrapper:focus-within {
+      box-shadow: 0 6px 25px rgba(168, 85, 156, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 18px;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 300;
+    }
+
+    select {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 18px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    select option {
+      background: #2d1b4e;
+      color: white;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 30px 0;
+      color: white;
+      font-size: 15px;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .checkbox-wrapper a {
+      color: #e89ed6;
+      text-decoration: none;
+      margin-left: 5px;
+    }
+
+    .login-link {
+      color: white;
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+
+    .login-link a {
+      color: #e89ed6;
+      text-decoration: none;
+      font-weight: 500;
+      margin-left: 10px;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .submit-btn {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #a8559c 0%, #8a4a84 100%);
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(168, 85, 156, 0.4);
+      transition: all 0.3s;
+    }
+
+    .submit-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 10px 35px rgba(168, 85, 156, 0.6);
+    }
+
+    .submit-btn:active {
+      transform: scale(1.05);
+    }
+
+    .submit-btn svg {
+      width: 36px;
+      height: 36px;
+      color: #2d1b4e;
+      margin-left: 4px;
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 14px;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.success {
+      background: rgba(76, 175, 80, 0.2);
+      color: #81c784;
+      border: 1px solid rgba(129, 199, 132, 0.3);
+    }
+
+    .message.error {
+      background: rgba(244, 67, 54, 0.2);
+      color: #e57373;
+      border: 1px solid rgba(229, 115, 115, 0.3);
+    }
+
+    .decoration {
+      position: absolute;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .decoration.left {
+      bottom: 50px;
+      left: -30px;
+      font-size: 120px;
+      color: #a8559c;
+    }
+
+    .decoration.right {
+      bottom: 100px;
+      right: -20px;
+      font-size: 140px;
+      color: #a8559c;
+    }
+  </style>
+</head>
+<body>
+  <div class="decoration left">♪</div>
+  <div class="decoration right">♪</div>
+  
+  <div class="container">
+    <div class="header">
+      <h1>Register</h1>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+        <input type="text" id="fullname" placeholder="Full Name" required>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <input type="email" id="email" placeholder="Email" required>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <input type="password" id="password" placeholder="Password" required>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-wrapper">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <select id="country" required>
+          <option value="">Country</option>
+          <option value="ph">Philippines</option>
+          <option value="us">United States</option>
+          <option value="uk">United Kingdom</option>
+          <option value="ca">Canada</option>
+          <option value="au">Australia</option>
+          <option value="jp">Japan</option>
+          <option value="sg">Singapore</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="checkbox-wrapper">
+      <input type="checkbox" id="terms" required>
+      <label for="terms">I agree to the<a href="#">Terms & Conditions</a></label>
+    </div>
+
+    <div class="login-link">
+      Already have an account? <a href="index.html">Sign in</a>
+    </div>
+
+    <button class="submit-btn" onclick="handleSubmit()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    function handleSubmit() {
+      const fullname = document.getElementById('fullname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const country = document.getElementById('country').value;
+      const terms = document.getElementById('terms').checked;
+      const messageEl = document.getElementById('message');
+
+      messageEl.style.display = 'none';
+      messageEl.className = 'message';
+
+      if (!fullname || !email || !password || !confirmPassword || !country) {
+        showMessage('Please fill in all fields', 'error');
+        return;
+      }
+
+      if (!terms) {
+        showMessage('Please accept the Terms & Conditions', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showMessage('Password must be at least 6 characters', 'error');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showMessage('Passwords do not match', 'error');
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showMessage('Please enter a valid email address', 'error');
+        return;
+      }
+
+      fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: fullname,
+          email: email,
+          password: password,
+          country: country
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          showMessage('Account created successfully!', 'success');
+        })
+
+      setTimeout(() => {
+        document.getElementById('fullname').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('confirm-password').value = '';
+        document.getElementById('country').value = '';
+        document.getElementById('terms').checked = false;
+        messageEl.style.display = 'none';
+      }, 2000);
+    }
+
+    function showMessage(text, type) {
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = text;
+      messageEl.className = `message ${type}`;
+      messageEl.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome user - Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Ubuntu", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(180deg, #2d1b4e 0%, #1a1030 100%);
+      color: white;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, #a8559c 0%, #7d3f7a 100%);
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(168, 85, 156, 0.3);
+    }
+
+    .navbar-brand {
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    .navbar-user {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-name {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 400;
+      letter-spacing: 1px;
+    }
+
+    .add-note-btn {
+      background: linear-gradient(135deg, #a8559c 0%, #8a4a84 100%);
+      border: none;
+      padding: 15px 30px;
+      border-radius: 30px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(168, 85, 156, 0.4);
+      transition: all 0.3s;
+    }
+
+    .add-note-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 156, 0.6);
+    }
+
+    .add-note-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .empty-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+      opacity: 0.3;
+    }
+
+    .empty-title {
+      font-size: 28px;
+      margin-bottom: 15px;
+      opacity: 0.8;
+    }
+
+    .empty-subtitle {
+      font-size: 16px;
+      opacity: 0.6;
+      margin-bottom: 30px;
+    }
+
+    /* Notes Grid */
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .note-card {
+      background: linear-gradient(135deg, rgba(168, 85, 156, 0.15) 0%, rgba(125, 63, 122, 0.15) 100%);
+      border: 1px solid rgba(168, 85, 156, 0.3);
+      border-radius: 15px;
+      padding: 25px;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .note-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #a8559c 0%, #8a4a84 100%);
+    }
+
+    .note-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(168, 85, 156, 0.4);
+      border-color: rgba(168, 85, 156, 0.6);
+    }
+
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .note-title {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: white;
+    }
+
+    .note-date {
+      font-size: 12px;
+      opacity: 0.6;
+      margin-top: 5px;
+    }
+
+    .note-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .note-action-btn {
+      background: rgba(168, 85, 156, 0.3);
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .note-action-btn:hover {
+      background: rgba(168, 85, 156, 0.6);
+    }
+
+    .note-action-btn svg {
+      width: 16px;
+      height: 16px;
+      color: white;
+    }
+
+    .note-content {
+      font-size: 14px;
+      line-height: 1.6;
+      opacity: 0.8;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .action-wrap {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .deletion,
+    .edit {
+      background: rgba(168, 85, 156, 0.3);
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .deletion:hover,
+    .edit:hover {
+      background: rgba(168, 85, 156, 0.6);
+      transform: scale(1.1);
+    }
+
+    .deletion:active,
+    .edit:active {
+      transform: scale(0.95);
+    }
+
+    .deletion::before,
+    .edit::before {
+      content: '';
+      width: 18px;
+      height: 18px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: brightness(0) invert(1);
+    }
+
+    .edit::before {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>');
+    }
+
+    .deletion::before {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>');
+    }
+
+    .decoration {
+      position: fixed;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .decoration.top-left {
+      top: 100px;
+      left: 50px;
+      font-size: 150px;
+      color: #a8559c;
+    }
+
+    .decoration.bottom-right {
+      bottom: 50px;
+      right: 50px;
+      font-size: 180px;
+      color: #a8559c;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-btn {
+      background: rgba(168, 85, 156, 0.2);
+      border: 1px solid rgba(168, 85, 156, 0.3);
+      padding: 8px 16px;
+      border-radius: 20px;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .toggle-btn.active {
+      background: linear-gradient(135deg, #a8559c 0%, #8a4a84 100%);
+      border-color: transparent;
+    }
+
+    .toggle-btn:hover {
+      border-color: rgba(168, 85, 156, 0.6);
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 15px 20px;
+      }
+
+      .navbar-brand {
+        font-size: 22px;
+      }
+
+      .header-section {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+      }
+
+      .notes-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="decoration top-left">♪</div>
+  <div class="decoration bottom-right">♪</div>
+
+  <nav class="navbar">
+    <div class="navbar-brand">Notes</div>
+    <div class="navbar-user">
+      <span class="user-name">Welcome, User</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="header-section">
+      <h1 class="page-title">My Notes</h1>
+      <button class="add-note-btn" onclick="addNote()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Add Note
+      </button>
+    </div>
+
+    <div class="view-toggle">
+      <button class="toggle-btn active" onclick="showEmptyState()">Empty View</button>
+      <button class="toggle-btn" onclick="showNotesView()">With Notes</button>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state">
+      <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <h2 class="empty-title">No notes yet</h2>
+      <p class="empty-subtitle">Start creating your first note by clicking the "Add Note" button above</p>
+    </div>
+
+    <!-- Notes Grid -->
+    <div id="notes-grid" class="notes-grid" style="display: none;">
+      <div class="note-card" onclick="openNote(1)">
+        <div class="note-header">
+          <div>
+            <h3 class="note-title">Meeting Notes</h3>
+            <p class="note-date">Dec 18, 2025</p>
+          </div>
+          <div class="note-actions">
+            <button class="note-action-btn" onclick="event.stopPropagation(); editNote(1)" title="Edit">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+            <button class="note-action-btn" onclick="event.stopPropagation(); deleteNote(1)" title="Delete">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <p class="note-content">Discussed project timeline and deliverables for Q1 2026. Key action items include finalizing the design mockups and scheduling client review sessions.</p>
+      </div>
+
+      <div class="note-card" onclick="openNote(2)">
+        <div class="note-header">
+          <div>
+            <h3 class="note-title">Ideas for App</h3>
+            <p class="note-date">Dec 17, 2025</p>
+          </div>
+          <div class="note-actions">
+            <button class="note-action-btn" onclick="event.stopPropagation(); editNote(2)" title="Edit">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+            <button class="note-action-btn" onclick="event.stopPropagation(); deleteNote(2)" title="Delete">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <p class="note-content">Add dark mode toggle, implement search functionality, create backup feature for notes, and add tags for better organization.</p>
+      </div>
+
+      <div class="note-card" onclick="openNote(3)">
+        <div class="note-header">
+          <div>
+            <h3 class="note-title">Shopping List</h3>
+            <p class="note-date">Dec 16, 2025</p>
+          </div>
+          <div class="note-actions">
+            <button class="note-action-btn" onclick="event.stopPropagation(); editNote(3)" title="Edit">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+            <button class="note-action-btn" onclick="event.stopPropagation(); deleteNote(3)" title="Delete">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <p class="note-content">Milk, eggs, bread, coffee beans, fresh vegetables, chicken breast, pasta, olive oil, and don't forget the chocolate!</p>
+      </div>
+
+      <div class="note-card" onclick="openNote(4)">
+        <div class="note-header">
+          <div>
+            <h3 class="note-title">Book Recommendations</h3>
+            <p class="note-date">Dec 15, 2025</p>
+          </div>
+          <div class="note-actions">
+            <button class="note-action-btn" onclick="event.stopPropagation(); editNote(4)" title="Edit">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+            <button class="note-action-btn" onclick="event.stopPropagation(); deleteNote(4)" title="Delete">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <p class="note-content">Atomic Habits by James Clear, The Psychology of Money by Morgan Housel, Deep Work by Cal Newport</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+    const token = localStorage.getItem("token");
+
+    // Initial load
+    display();
+    username();
+
+    function showEmptyState() {
+      document.getElementById('empty-state').style.display = 'block';
+      document.getElementById('notes-grid').style.display = 'none';
+      document.querySelectorAll('.toggle-btn')[0].classList.add('active');
+      document.querySelectorAll('.toggle-btn')[1].classList.remove('active');
+    }
+
+    function showNotesView() {
+      document.getElementById('empty-state').style.display = 'none';
+      document.getElementById('notes-grid').style.display = 'grid';
+      document.querySelectorAll('.toggle-btn')[1].classList.add('active');
+      document.querySelectorAll('.toggle-btn')[0].classList.remove('active');
+    }
+
+    // Preserved your addNote function logic
+    function addNote() {
+      let emptyState = document.getElementById('empty-state');
+      emptyState.innerHTML = ""; // Preserved this
+
+      let title = prompt("Enter the title");
+      let desc = prompt("Enter the description");
+
+      if (title && desc) {
+        // Added the fetch to save it to your database
+        fetch("/api/mynotes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ title: title, description: desc })
+        })
+        .then(res => res.json())
+        .then(data => {
+          display(); // Refresh display after adding
+        })
+        .catch(err => console.error(err));
+      }
+    }
+
+    // edit notes
+    async function edits(noteId) {
+      let upTitle = prompt("Enter the updated title");
+      let upDesc = prompt("Enter the updated description");
+
+      try {
+        if(upTitle || upDesc) {
+          fetch(`/api/updates/${noteId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              uptitle: upTitle,
+              updesc: upDesc
+            })
+          })
+            .then(res => res.json())
+            .then(data => {
+              display();
+              console.log("Updated")
+            });
+         }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+
+      }
+
+    // deletes notes
+    function deletes(noteId) {
+      try {
+        fetch(`/api/delete/${noteId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        })
+         .then(res => res.json())
+	       .then(data => {
+            display();
+            console.log("Item removed:", data)
+          });
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    } 
+
+    // Preserved your display function logic
+    function display() {
+      let notesGrid = document.getElementById('notes-grid');
+
+      fetch("/api/mynotes", {
+          headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      })
+        .then(res => {
+          if (res.status === 401) {
+            alert("Session expired. Please login again.");
+            window.location.href = "index.html";
+          }
+          return res.json(); 
+        })
+        .then(notes => {
+          notesGrid.innerHTML = ""; // Clear grid before appending to avoid duplicates
+
+          if(notes.length > 0) showNotesView();
+
+          notes.forEach(nt => {
+
+            // Preserved your manual element creation
+            let notesContain = document.createElement("div");
+            notesContain.className = "note-card"; // Added class for styling
+
+            let title = document.createElement("p");
+            title.className = "note-title"; // Added class for styling
+            title.textContent = nt.title;
+
+            let desc = document.createElement("p");
+            desc.className = "note-content"; // Added class for styling
+            desc.textContent = nt.description;
+
+            let actionBtnWrap = document.createElement("div");
+            actionBtnWrap.className = "action-wrap";
+
+            let deleteBtn = document.createElement("button");
+            deleteBtn.className = "deletion";
+
+            let editBtn = document.createElement("button");
+            editBtn.className = "edit";
+
+            actionBtnWrap.appendChild(editBtn);
+            actionBtnWrap.appendChild(deleteBtn);
+
+            notesContain.appendChild(actionBtnWrap);
+            notesContain.appendChild(title);
+            notesContain.appendChild(desc);
+
+            notesGrid.appendChild(notesContain);
+
+            // edit function
+            editBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              edits(nt.id);
+            });
+
+            // delete function
+            deleteBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              deletes(nt.id);
+            });
+          });
+        })
+          .catch(err => console.error(err));
+    }
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem("token");
+        window.location.href = "index.html";
+      }
+    }
+
+    function username() {
+      let username = document.querySelector(".user-name");
+
+      // place the logic here 
+      fetch(`/api/users`, {
+          headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      })
+        .then(res => res.json())
+        .then(users => {
+          username.textContent = `Welcome, ${users.full_name}`;
+        })
+          .catch(err => console.error(err));
+    }
+</script>
+</body>
+</html>
