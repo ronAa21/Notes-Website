@@ -1028,6 +1028,150 @@
       margin: 0;
     }
 
+    /* Logout Modal Styling - Add this to your existing CSS */
+
+    #logout-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease-out;
+      padding: 20px;
+    }
+
+    #logout-overlay.active {
+      display: flex;
+    }
+
+    .logout-popup {
+      background: linear-gradient(135deg, #2d1b4e 0%, #1a1030 100%);
+      border: 1px solid rgba(168, 85, 156, 0.3);
+      border-radius: 25px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+      animation: modalZoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+      position: relative;
+      padding: 40px;
+      text-align: center;
+    }
+
+    /* Decorative Top Bar */
+    .logout-popup::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #a8559c 0%, #ff6b9d 50%, #a8559c 100%);
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+    }
+
+    .logout-head {
+      font-size: 28px;
+      font-weight: 500;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .logout-sub {
+      font-size: 16px;
+      opacity: 0.8;
+      color: white;
+      margin-bottom: 35px;
+      line-height: 1.6;
+    }
+
+    .wrap {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: "Ubuntu", sans-serif;
+      font-weight: 500;
+      min-width: 120px;
+    }
+
+    #cancel-logout {
+      background: rgba(168, 85, 156, 0.2);
+      color: white;
+      border: 1px solid rgba(168, 85, 156, 0.3);
+    }
+
+    #cancel-logout:hover {
+      background: rgba(168, 85, 156, 0.3);
+      border-color: rgba(168, 85, 156, 0.5);
+      transform: translateY(-2px);
+    }
+
+    #confirm-logout {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    #confirm-logout:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+    }
+
+    .btn-action:active {
+      transform: translateY(0);
+    }
+
+        /* Sliding-modal */
+
+    .sliding-modal {
+      left: 20px;
+      right: 20px;
+      max-width: none;
+    }
+
+    .notification {
+      padding: 15px;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+    }
+
     @media (max-width: 768px) {
       .navbar {
         padding: 15px 20px;
@@ -1071,39 +1215,22 @@
         height: 36px;
         font-size: 18px;
       }
-    }
 
-    /* Sliding-modal */
-
-    .sliding-modal {
-      left: 20px;
-      right: 20px;
-      max-width: none;
-    }
-
-    .notification {
-      padding: 15px;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateY(-100px);
-        opacity: 0;
+      .logout-popup {
+        padding: 30px 25px;
+        max-width: 90%;
       }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
 
-    @keyframes slideOut {
-      from {
-        transform: translateY(0);
-        opacity: 1;
+      .logout-head {
+        font-size: 24px;
       }
-      to {
-        transform: translateY(-100px);
-        opacity: 0;
+
+      .wrap {
+        flex-direction: column;
+      }
+
+      .btn-action {
+        width: 100%;
       }
     }
   </style>
@@ -1235,7 +1362,7 @@
           </svg>
           <span id="modal-title-text">Create Note</span>
         </h2>
-        <button class="modal-close" onclick="closeNoteModal()">
+        <button class="modal-close" id="modal-exit">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -1265,7 +1392,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeNoteModal()">Cancel</button>
+        <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
         <button class="btn btn-primary">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -1286,7 +1413,7 @@
           </svg>
           Delete Note
         </h2>
-        <button class="modal-close" onclick="closeNoteModal()">
+        <button class="modal-close" id="delete-exit">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -1309,7 +1436,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeNoteModal()">Cancel</button>
+        <button class="btn btn-secondary" id="cancel-danger">Cancel</button>
         <button class="btn btn-danger">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1329,6 +1456,17 @@
       </div>
       <div class="upclose-body">
         <!-- place the description here -->
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="logout-overlay">
+    <div class="logout-popup">
+      <h2 class="logout-head">Logout</h2>
+      <p class="logout-sub">You will need to login again</p>
+      <div class="wrap">
+        <button class="btn-action" id="cancel-logout">cancel</button>
+        <button class="btn-action" id="confirm-logout">Logout</button>
       </div>
     </div>
   </div>
@@ -1538,10 +1676,7 @@
     }
 
     function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem("token");
-        window.location.replace("index.html");
-      }
+      logoutModal();
     }
 
     function username() {
@@ -1634,6 +1769,17 @@
       }, 400)
     }
 
+    // Modal overlay
+    let modalOverlay = document.querySelector(".modal-overlay");
+    let deleteModal = document.getElementById("delete-modal");
+    const notesModal = document.getElementById("notes-modal")
+
+    // button modal close
+    const modalExit = document.getElementById("modal-exit");
+    const deleteExit = document.getElementById("delete-exit")
+
+    const cancelModal = document.getElementById("modal-cancel");
+
     // modal variables
     let noteTitle = document.getElementById('note-title');
     let noteDesc = document.getElementById('note-description');
@@ -1663,18 +1809,31 @@
           saveBtn.disabled = false; 
       }, 1000);
 
-      closeNoteModal();
+      closeNoteModal(modalOverlay);
     });
 
     // deletes modal
     document.querySelector(".btn-danger").addEventListener("click", () => {
       deletes(currentEditId);
-      closeNoteModal();
+      closeNoteModal(deleteModal);
     });
 
-    document.getElementById("exit").addEventListener("click", function() {
-      closeNoteModal();
-    })
+    const cancelDanger = document.getElementById("cancel-danger");
+
+    // view notes upclose cancel
+    let ex = document.getElementById("exit");
+
+    exit(modalExit, modalOverlay);
+    exit(cancelModal, modalOverlay);
+    exit(deleteExit, deleteModal);
+    exit(cancelDanger, deleteModal);
+    exit(ex, notesModal);
+
+    function exit(btn, modal) {
+      btn.addEventListener("click", () => {
+        closeNoteModal(modal)
+      })
+    }
 
     // create/edit modal
     function modalAppearance(mode, id = null, title = "", desc = "") {
@@ -1707,19 +1866,11 @@
       }
     }
 
-    function closeNoteModal() {
-      let modalOverlay = document.querySelector(".modal-overlay");
-      let deleteModal = document.getElementById("delete-modal");
-      const notesModal = document.getElementById("notes-modal");
-
-      modalOverlay.classList.remove("active");
-      deleteModal.classList.remove("active");
-      notesModal.classList.remove("active");
+    function closeNoteModal(modal) {
+      modal.classList.remove("active");
     }
 
     function deleteConfirmation(id, delTitle, delDesc) {
-      let deleteModal = document.getElementById("delete-modal");
-
       let deleteNoteInfo = document.querySelector(".delete-note-info");
 
       deleteNoteInfo.innerHTML = "";
@@ -1767,6 +1918,29 @@
       upcloseHead.appendChild(heading);
       upcloseDesc.appendChild(desc);
 
+    }
+
+    function logoutModal() {
+      const logoutOverlay = document.getElementById("logout-overlay");
+
+      logoutOverlay.classList.add("active");
+
+      document.querySelector(".wrap").addEventListener("click", function(e) {
+        let action = e.target.id;
+
+        if(action === "cancel-logout") {
+          closeNoteModal(logoutOverlay);
+          return;
+        } else if (action === "confirm-logout") {
+          showNotification('success', 'Logging out', 'Please wait');
+
+          closeNoteModal(logoutOverlay);
+          setTimeout(() => {
+            localStorage.removeItem("token");
+            window.location.replace("index.html");
+          }, 3000)
+        }
+      })
     }
 </script>
 </body>
