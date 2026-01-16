@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome user - Notes</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
@@ -19,6 +22,10 @@
       min-height: 100vh;
       background: linear-gradient(180deg, #2d1b4e 0%, #1a1030 100%);
       color: white;
+    }
+
+    body::-webkit-scrollbar {
+      display: none;                /* Chrome, Safari */
     }
 
     .navbar {
@@ -132,6 +139,14 @@
       margin-bottom: 30px;
     }
 
+    .loading-state {
+      height: 80vh;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     /* Notes Grid */
     .notes-grid {
       display: grid;
@@ -223,6 +238,11 @@
       -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
       overflow: hidden;
+    }
+
+    .loading-spinner {
+      display: block;
+      margin: 0 auto;
     }
 
     .action-wrap {
@@ -324,6 +344,690 @@
       border-color: rgba(168, 85, 156, 0.6);
     }
 
+    /* ERROR STATE STYLE */
+    .error-state {
+      display: none;
+      text-align: center;
+      padding: 60px 40px;
+      max-width: 100%;
+    }
+
+    .error-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+    }
+
+    .error-icon svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 4px 15px rgba(168, 85, 156, 0.3));
+    }
+
+    .error-title {
+      font-size: 28px;
+      margin-bottom: 15px;
+      color: #ff6b9d;
+      font-weight: 500;
+    }
+
+    .error-message {
+      font-size: 16px;
+      opacity: 0.8;
+      margin-bottom: 35px;
+      line-height: 1.6;
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .retry-btn,
+    .back-btn {
+      background: linear-gradient(135deg, #a8559c 0%, #8a4a84 100%);
+      border: none;
+      padding: 15px 30px;
+      border-radius: 30px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(168, 85, 156, 0.4);
+      transition: all 0.3s;
+    }
+
+    .back-btn {
+      background: rgba(168, 85, 156, 0.2);
+      border: 1px solid rgba(168, 85, 156, 0.3);
+    }
+
+    .retry-btn:hover,
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 156, 0.6);
+    }
+
+    .retry-btn:active,
+    .back-btn:active {
+      transform: translateY(0);
+    }
+
+    .retry-btn svg,
+    .back-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .error-details {
+      margin-top: 25px;
+      padding: 15px;
+      background: rgba(168, 85, 156, 0.1);
+      border: 1px solid rgba(168, 85, 156, 0.2);
+      border-radius: 10px;
+      font-size: 13px;
+      opacity: 0.7;
+      text-align: left;
+    }
+
+    .error-code {
+      color: #ff6b9d;
+      font-weight: 500;
+    }
+
+    /* Notification Container */
+    .sliding-modal {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 400px;
+    }
+
+    /* Notification Card */
+    .notification {
+      background: linear-gradient(135deg, rgba(168, 85, 156, 0.95) 0%, rgba(125, 63, 122, 0.95) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      animation: slideIn 0.4s ease-out;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .notification::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #a8559c 0%, #ff6b9d 100%);
+    }
+
+    .notification.success::before {
+      background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+    }
+
+    .notification.error::before {
+      background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .notification.warning::before {
+      background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+    }
+
+    .notification.info::before {
+      background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
+    }
+
+    .notification.success {
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%);
+      border-color: rgba(74, 222, 128, 0.3);
+    }
+
+    .notification.error {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .notification.warning {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+
+    .notification.info {
+      background: linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%);
+      border-color: rgba(96, 165, 250, 0.3);
+    }
+
+    .notification.slide-out {
+      animation: slideOut 0.4s ease-in forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+    }
+
+    /* Icon */
+    .notification-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+    }
+
+    .notification-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Content */
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: white;
+    }
+
+    .notification-message {
+      font-size: 14px;
+      opacity: 0.9;
+      line-height: 1.5;
+      color: white;
+    }
+
+    /* Close Button */
+    .notification-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .notification-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .notification-close svg {
+      width: 14px;
+      height: 14px;
+      color: white;
+    }
+
+    /* Progress Bar */
+    .notification-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.3);
+      animation: progress 3s linear forwards;
+    }
+
+    /* ACTION MODAL */
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Modal Container */
+    .modal {
+      background: linear-gradient(135deg, #2d1b4e 0%, #1a1030 100%);
+      border: 1px solid rgba(168, 85, 156, 0.3);
+      border-radius: 20px;
+      padding: 0;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.3s ease-out;
+      overflow: hidden;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Modal Header */
+    .modal-header {
+      background: linear-gradient(135deg, #a8559c 0%, #7d3f7a 100%);
+      padding: 25px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(168, 85, 156, 0.3);
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-title svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    .modal-close svg {
+      width: 18px;
+      height: 18px;
+      color: white;
+    }
+
+    /* Modal Body */
+    .modal-body {
+      padding: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      background: rgba(168, 85, 156, 0.1);
+      border: 1px solid rgba(168, 85, 156, 0.3);
+      border-radius: 10px;
+      padding: 12px 15px;
+      color: white;
+      font-size: 15px;
+      font-family: "Ubuntu", sans-serif;
+      transition: all 0.3s;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #a8559c;
+      background: rgba(168, 85, 156, 0.15);
+      box-shadow: 0 0 0 3px rgba(168, 85, 156, 0.2);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
+    }
+
+    /* Modal Footer */
+    .modal-footer {
+      padding: 20px 30px;
+      border-top: 1px solid rgba(168, 85, 156, 0.2);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: "Ubuntu", sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #a8559c 0%, #8a4a84 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(168, 85, 156, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 156, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(168, 85, 156, 0.2);
+      color: white;
+      border: 1px solid rgba(168, 85, 156, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(168, 85, 156, 0.3);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+    }
+
+    /* Delete Modal Specific */
+    .delete-warning {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .delete-warning-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .delete-warning-icon svg {
+      width: 100%;
+      height: 100%;
+      color: #ef4444;
+    }
+
+    .delete-warning-text {
+      flex: 1;
+    }
+
+    .delete-warning-title {
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: #ff6b9d;
+    }
+
+    .delete-warning-message {
+      font-size: 14px;
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+
+    .delete-note-info {
+      background: rgba(168, 85, 156, 0.1);
+      border: 1px solid rgba(168, 85, 156, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .delete-note-title {
+      font-weight: 500;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .delete-note-desc {
+      font-size: 14px;
+      opacity: 0.7;
+      line-height: 1.5;
+    }
+
+    @keyframes progress {
+      from {
+        width: 100%;
+      }
+      to {
+        width: 0%;
+      }
+    }
+
+    /* Upclose modal style */
+    /* Notes Modal Styling - Add this to your existing CSS */
+
+    #notes-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease-out;
+      padding: 20px;
+    }
+
+    #notes-modal.active {
+      display: flex;
+    }
+
+    .notes-popup {
+      background: linear-gradient(135deg, #2d1b4e 0%, #1a1030 100%);
+      border: 1px solid rgba(168, 85, 156, 0.3);
+      border-radius: 25px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 85vh;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+      animation: modalZoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    @keyframes modalZoom {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Decorative Top Bar */
+    .notes-popup::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #a8559c 0%, #ff6b9d 50%, #a8559c 100%);
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    #exit {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(168, 85, 156, 0.2);
+      border: 1px solid rgba(168, 85, 156, 0.3);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: white;
+      font-size: 20px;
+      font-weight: 500;
+      z-index: 10;
+    }
+
+    #exit:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: rgba(239, 68, 68, 0.5);
+      transform: rotate(90deg) scale(1.1);
+    }
+
+    .upclose-heading {
+      padding: 35px 60px 20px 35px;
+      border-bottom: 1px solid rgba(168, 85, 156, 0.2);
+    }
+
+    .upclose-title {
+      font-size: 28px;
+      font-weight: 500;
+      color: white;
+      line-height: 1.3;
+      margin: 0;
+    }
+
+    .upclose-body {
+      padding: 30px 35px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .upclose-body::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .upclose-body::-webkit-scrollbar-track {
+      background: rgba(168, 85, 156, 0.1);
+      border-radius: 10px;
+    }
+
+    .upclose-body::-webkit-scrollbar-thumb {
+      background: rgba(168, 85, 156, 0.4);
+      border-radius: 10px;
+    }
+
+    .upclose-body::-webkit-scrollbar-thumb:hover {
+      background: rgba(168, 85, 156, 0.6);
+    }
+
+    .upclose-desc {
+      font-size: 16px;
+      line-height: 1.8;
+      opacity: 0.9;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: white;
+      margin: 0;
+    }
+
     @media (max-width: 768px) {
       .navbar {
         padding: 15px 20px;
@@ -341,6 +1045,65 @@
 
       .notes-grid {
         grid-template-columns: 1fr;
+      }
+
+      .notes-popup {
+        max-height: 90vh;
+        border-radius: 20px;
+      }
+
+      .upclose-heading {
+        padding: 30px 50px 15px 25px;
+      }
+
+      .upclose-title {
+        font-size: 24px;
+      }
+
+      .upclose-body {
+        padding: 25px;
+      }
+
+      #exit {
+        top: 15px;
+        right: 15px;
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+      }
+    }
+
+    /* Sliding-modal */
+
+    .sliding-modal {
+      left: 20px;
+      right: 20px;
+      max-width: none;
+    }
+
+    .notification {
+      padding: 15px;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-100px);
+        opacity: 0;
       }
     }
   </style>
@@ -360,7 +1123,7 @@
   <div class="container">
     <div class="header-section">
       <h1 class="page-title">My Notes</h1>
-      <button class="add-note-btn" onclick="addNote()">
+      <button class="add-note-btn">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -368,13 +1131,8 @@
       </button>
     </div>
 
-    <div class="view-toggle">
-      <button class="toggle-btn active" onclick="showEmptyState()">Empty View</button>
-      <button class="toggle-btn" onclick="showNotesView()">With Notes</button>
-    </div>
-
     <!-- Empty State -->
-    <div id="empty-state" class="empty-state">
+    <div id="empty-state" class="empty-state" style="display: none;">
       <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
@@ -382,126 +1140,238 @@
       <p class="empty-subtitle">Start creating your first note by clicking the "Add Note" button above</p>
     </div>
 
+    <div class="loading-state" style="display: none;">
+      <svg class="loading-spinner" width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="spinnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#a8559c;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#7d3f7a;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <circle 
+          cx="25" 
+          cy="25" 
+          r="20" 
+          fill="none" 
+          stroke="url(#spinnerGradient)" 
+          stroke-width="4" 
+          stroke-linecap="round"
+          stroke-dasharray="31.4 31.4"
+          transform="rotate(-90 25 25)">
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="0 25 25"
+            to="360 25 25"
+            dur="1s"
+            repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+
     <!-- Notes Grid -->
     <div id="notes-grid" class="notes-grid" style="display: none;">
-      <div class="note-card" onclick="openNote(1)">
-        <div class="note-header">
-          <div>
-            <h3 class="note-title">Meeting Notes</h3>
-            <p class="note-date">Dec 18, 2025</p>
-          </div>
-          <div class="note-actions">
-            <button class="note-action-btn" onclick="event.stopPropagation(); editNote(1)" title="Edit">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </button>
-            <button class="note-action-btn" onclick="event.stopPropagation(); deleteNote(1)" title="Delete">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <p class="note-content">Discussed project timeline and deliverables for Q1 2026. Key action items include finalizing the design mockups and scheduling client review sessions.</p>
-      </div>
 
-      <div class="note-card" onclick="openNote(2)">
-        <div class="note-header">
-          <div>
-            <h3 class="note-title">Ideas for App</h3>
-            <p class="note-date">Dec 17, 2025</p>
-          </div>
-          <div class="note-actions">
-            <button class="note-action-btn" onclick="event.stopPropagation(); editNote(2)" title="Edit">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </button>
-            <button class="note-action-btn" onclick="event.stopPropagation(); deleteNote(2)" title="Delete">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <p class="note-content">Add dark mode toggle, implement search functionality, create backup feature for notes, and add tags for better organization.</p>
-      </div>
+    </div>
 
-      <div class="note-card" onclick="openNote(3)">
-        <div class="note-header">
-          <div>
-            <h3 class="note-title">Shopping List</h3>
-            <p class="note-date">Dec 16, 2025</p>
-          </div>
-          <div class="note-actions">
-            <button class="note-action-btn" onclick="event.stopPropagation(); editNote(3)" title="Edit">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </button>
-            <button class="note-action-btn" onclick="event.stopPropagation(); deleteNote(3)" title="Delete">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <p class="note-content">Milk, eggs, bread, coffee beans, fresh vegetables, chicken breast, pasta, olive oil, and don't forget the chocolate!</p>
-      </div>
+  <!-- Error state -->
+  <div class="error-state">
+    <div class="error-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#a8559c" stroke-width="1.5">
+        <defs>
+          <linearGradient id="errorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#ff6b9d;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#a8559c;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <circle cx="12" cy="12" r="10" stroke="url(#errorGradient)" stroke-width="1.5" fill="none"/>
+        <path stroke="url(#errorGradient)" stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01" />
+      </svg>
+    </div>
 
-      <div class="note-card" onclick="openNote(4)">
-        <div class="note-header">
-          <div>
-            <h3 class="note-title">Book Recommendations</h3>
-            <p class="note-date">Dec 15, 2025</p>
+    <h2 class="error-title">Oops! Something went wrong</h2>
+    <p class="error-message">
+      We couldn't load your notes. This might be due to a network issue or server error. Please try again.
+    </p>
+
+    <div class="error-actions">
+
+      <!-- MATCH THE FUNCTION HERE -->
+      <button class="retry-btn" onclick="retryAction()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Try Again
+      </button>
+
+      <!-- MATCH THE FUNCTION HERE -->
+      <button class="back-btn" onclick="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Go Back to login
+      </button>
+    </div>
+
+    <div class="error-details">
+      <!--  PLACE THE ACTUAL ERROR HERE -->
+      <span class="error-code">Error Code:</span> FETCH_FAILED<br>
+      If this problem persists, please contact support.
+    </div>
+  </div>
+
+  <!-- Sliding modal -->
+  <div id="sliding-modal" class="sliding-modal">
+    <!-- PLACE THE STATE HERE -->
+  </div>
+
+  <!-- CREATING/EDITING MODAL -->
+  <div id="note-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          <span id="modal-title-text">Create Note</span>
+        </h2>
+        <button class="modal-close" onclick="closeNoteModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="note-form">
+          <div class="form-group">
+            <label class="form-label" for="note-title">Title</label>
+            <input 
+              type="text" 
+              id="note-title" 
+              class="form-input" 
+              placeholder="Enter note title"
+              required
+            >
           </div>
-          <div class="note-actions">
-            <button class="note-action-btn" onclick="event.stopPropagation(); editNote(4)" title="Edit">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </button>
-            <button class="note-action-btn" onclick="event.stopPropagation(); deleteNote(4)" title="Delete">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
+          <div class="form-group">
+            <label class="form-label" for="note-description">Description</label>
+            <textarea 
+              id="note-description" 
+              class="form-textarea" 
+              placeholder="Enter note description"
+              required
+            ></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeNoteModal()">Cancel</button>
+        <button class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span id="save-btn-text">Save Note</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Delete Note
+        </h2>
+        <button class="modal-close" onclick="closeNoteModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="delete-warning">
+          <div class="delete-warning-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div class="delete-warning-text">
+            <div class="delete-warning-title">Warning</div>
+            <div class="delete-warning-message">This action cannot be undone. The note will be permanently deleted.</div>
           </div>
         </div>
-        <p class="note-content">Atomic Habits by James Clear, The Psychology of Money by Morgan Housel, Deep Work by Cal Newport</p>
+        <div class="delete-note-info">
+          <!-- display the deleted info here -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeNoteModal()">Cancel</button>
+        <button class="btn btn-danger">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Delete Note
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- upclose modal look -->
+  <div class="modal-overlay" id="notes-modal">
+    <div class="notes-popup">
+      <button id="exit">X</button>
+      <div class="upclose-heading">
+        <!-- place the title here -->
+      </div>
+      <div class="upclose-body">
+        <!-- place the description here -->
       </div>
     </div>
   </div>
 
 <script>
+    // 1. FORCE RE-CHECK ON PAGE SHOW (Handles "Forward" button from Login)
+    window.addEventListener("pageshow", function(event) {
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            window.location.reload();
+        }
+    });
+
     const token = localStorage.getItem("token");
+
+    // loading state
+    const loadingState = document.querySelector(".loading-state");
+    let emptyState = document.getElementById('empty-state');
+
+    // error state
+    const errorState = document.querySelector(".error-state");
+    let errorCode = document.querySelector(".error-code");
+
+    // GLOBAL VARIABLES FOR MODAL
+    let currentEditId = null;
+    let isEditMode = false;
 
     // Initial load
     display();
     username();
 
-    function showEmptyState() {
-      document.getElementById('empty-state').style.display = 'block';
-      document.getElementById('notes-grid').style.display = 'none';
-      document.querySelectorAll('.toggle-btn')[0].classList.add('active');
-      document.querySelectorAll('.toggle-btn')[1].classList.remove('active');
-    }
+    showNotesView();
 
     function showNotesView() {
-      document.getElementById('empty-state').style.display = 'none';
       document.getElementById('notes-grid').style.display = 'grid';
-      document.querySelectorAll('.toggle-btn')[1].classList.add('active');
-      document.querySelectorAll('.toggle-btn')[0].classList.remove('active');
     }
 
-    // Preserved your addNote function logic
-    function addNote() {
-      let emptyState = document.getElementById('empty-state');
-      emptyState.innerHTML = ""; // Preserved this
+    document.querySelector(".add-note-btn").addEventListener("click", function() {
+      modalAppearance('add');
+    })
 
-      let title = prompt("Enter the title");
-      let desc = prompt("Enter the description");
+    // Preserved your addNote function logic
+    function addNote(title, desc) {
+      emptyState.innerHTML = ""; // Preserved this
 
       if (title && desc) {
         // Added the fetch to save it to your database
@@ -516,18 +1386,20 @@
         .then(res => res.json())
         .then(data => {
           display(); // Refresh display after adding
+          showNotification("success", 'Note added', `${title} has been added`);
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+          console.error(err);
+          showNotification("error", 'Something went wrong', `${error}`);
+        });
       }
     }
 
     // edit notes
-    async function edits(noteId) {
-      let upTitle = prompt("Enter the updated title");
-      let upDesc = prompt("Enter the updated description");
+    async function edits(noteId, newTitle, newDesc) {
 
       try {
-        if(upTitle || upDesc) {
+        if(newTitle || newDesc) {
           fetch(`/api/updates/${noteId}`, {
             method: "PUT",
             headers: {
@@ -535,18 +1407,20 @@
               "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify({
-              uptitle: upTitle,
-              updesc: upDesc
+              uptitle: newTitle,
+              updesc: newDesc
             })
           })
             .then(res => res.json())
             .then(data => {
               display();
-              console.log("Updated")
+              showNotification("success", 'Note updated', `notes has been updated`);
             });
          }
       } catch (error) {
+        // replace this with modal
         console.error("Error:", error);
+        showNotification("error", 'Something went wrong', `${error}`);
       }
 
       }
@@ -564,10 +1438,12 @@
          .then(res => res.json())
 	       .then(data => {
             display();
-            console.log("Item removed:", data)
-          });
+            showNotification("success", 'Note deleted', 'notes has been successfully deleted');          
+        });
       } catch (error) {
+        // replace this with modal
         console.error("Error:", error);
+        showNotification("error", 'Something went wrong', `${error}`);
       }
     } 
 
@@ -575,6 +1451,7 @@
     function display() {
       let notesGrid = document.getElementById('notes-grid');
 
+      loadingState.style.display = "flex";
       fetch("/api/mynotes", {
           headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -582,15 +1459,23 @@
       })
         .then(res => {
           if (res.status === 401) {
-            alert("Session expired. Please login again.");
-            window.location.href = "index.html";
+            // replace with sliding modal
+            showNotification("error", 'Session Expired', 'Please login again.');
+            localStorage.removeItem("token");
+            window.location.replace("index.html");
           }
           return res.json(); 
         })
         .then(notes => {
           notesGrid.innerHTML = ""; // Clear grid before appending to avoid duplicates
 
-          if(notes.length > 0) showNotesView();
+          loadingState.style.display = "none";
+
+          if(notes.length > 0) {
+            showNotesView()
+          } else {
+            emptyState.style.display = "block";
+          };
 
           notes.forEach(nt => {
 
@@ -627,23 +1512,35 @@
             // edit function
             editBtn.addEventListener("click", (e) => {
               e.stopPropagation();
-              edits(nt.id);
+              modalAppearance('edit', nt.id, nt.title, nt.description)
             });
 
             // delete function
             deleteBtn.addEventListener("click", (e) => {
               e.stopPropagation();
-              deletes(nt.id);
+              deleteConfirmation(nt.id, nt.title, nt.description);
             });
+
+            // for close up look
+            notesContain.addEventListener("click", () => {
+              openNote(nt.title, nt.description);
+            })
           });
         })
-          .catch(err => console.error(err));
+          .catch(err => {
+            console.error(err);
+
+            emptyState.style.display = "none";
+            errorState.style.display = "block";
+            errorCode.innerHTML = "";
+            errorCode.textContent = err;
+          });
     }
 
     function logout() {
       if (confirm('Are you sure you want to logout?')) {
         localStorage.removeItem("token");
-        window.location.href = "index.html";
+        window.location.replace("index.html");
       }
     }
 
@@ -658,9 +1555,218 @@
       })
         .then(res => res.json())
         .then(users => {
+          showNotification('success', `Hello, ${users.full_name}`, 'Happy writing!');
           username.textContent = `Welcome, ${users.full_name}`;
         })
-          .catch(err => console.error(err));
+          .catch(err =>   {
+            console.error(err);
+            showNotification("error", 'Someting went wrong', `${err}`);
+          });
+    }
+
+    function retryAction() {
+      window.location.reload();
+    };
+
+    function goBack() {
+      window.location.replace("index.html");
+      localStorage.removeItem("token");
+    }
+
+    // icons for sliding-modal states
+    const icons = {
+      success: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" style="stroke: #4ade80"/>
+      </svg>`,
+      error: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" style="stroke: #ef4444"/>
+      </svg>`,
+      warning: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" style="stroke: #fbbf24"/>
+      </svg>`,
+      info: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" style="stroke: #60a5fa"/>
+      </svg>`
+    };
+
+    function showNotification(type, title, message, duration = 3000) {
+      // sliding modal 
+      const slidingModal = document.getElementById("sliding-modal");
+
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+
+      notification.innerHTML = `
+        <div class="notification-icon">
+          ${icons[type]}
+        </div>
+        <div class="notification-content">
+          <div class="notification-title">${title}</div>
+          <div class="notification-message">${message}</div>
+        </div>
+        <button class="notification-close">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <div class="notification-progress"></div>
+      `;
+
+      slidingModal.appendChild(notification);
+
+      const closeBtn = notification.querySelector('.notification-close');
+      closeBtn.addEventListener('click', () => {
+        removeNotification(notification);
+      });
+      
+      // Auto remove after duration
+      if (duration > 0) {
+        setTimeout(() => {
+          removeNotification(notification);
+        }, duration);
+      }
+    }
+
+    function removeNotification(notification) {
+      notification.classList.add('slide-out');
+      setTimeout(() => {
+        notification.remove();
+      }, 400)
+    }
+
+    // modal variables
+    let noteTitle = document.getElementById('note-title');
+    let noteDesc = document.getElementById('note-description');
+
+    const saveBtn = document.querySelector('.btn-primary');
+    const saveBtnText = document.getElementById("save-btn-text");
+
+    // get the input value first
+    saveBtn.addEventListener("click", () => {
+      let titleVal = noteTitle.value;
+      let descVal = noteDesc.value;
+
+      if(!titleVal || !descVal) {
+        showNotification('warning', 'Cannot have empty fields', 'Please fill in both fields');
+        return;
+      }
+
+      saveBtn.disabled = true;
+
+      if(isEditMode) {
+        edits(currentEditId, titleVal, descVal)
+      } else {
+        addNote(titleVal, descVal);
+      }
+
+      setTimeout(() => {
+          saveBtn.disabled = false; 
+      }, 1000);
+
+      closeNoteModal();
+    });
+
+    // deletes modal
+    document.querySelector(".btn-danger").addEventListener("click", () => {
+      deletes(currentEditId);
+      closeNoteModal();
+    });
+
+    document.getElementById("exit").addEventListener("click", function() {
+      closeNoteModal();
+    })
+
+    // create/edit modal
+    function modalAppearance(mode, id = null, title = "", desc = "") {
+      let modalOverlay = document.querySelector(".modal-overlay");
+      let modalTitleText = document.getElementById("modal-title-text");
+
+      let noteTitleInput = document.getElementById('note-title');
+      let noteDescInput = document.getElementById('note-description');
+
+      modalOverlay.classList.add("active");
+
+      if(mode === 'add') {
+        isEditMode = false;
+        currentEditId = null;
+
+        noteTitleInput.value = "";
+        noteDescInput.value = "";
+
+        modalTitleText.textContent = 'Create Note';
+        saveBtnText.textContent = 'Save Note'
+      } else {
+        isEditMode = true;
+        currentEditId = id;
+
+        noteTitleInput.value = title;
+        noteDescInput.value = desc;
+
+        modalTitleText.textContent = 'Edit Note';
+        saveBtnText.textContent = 'Update Note'
+      }
+    }
+
+    function closeNoteModal() {
+      let modalOverlay = document.querySelector(".modal-overlay");
+      let deleteModal = document.getElementById("delete-modal");
+      const notesModal = document.getElementById("notes-modal");
+
+      modalOverlay.classList.remove("active");
+      deleteModal.classList.remove("active");
+      notesModal.classList.remove("active");
+    }
+
+    function deleteConfirmation(id, delTitle, delDesc) {
+      let deleteModal = document.getElementById("delete-modal");
+
+      let deleteNoteInfo = document.querySelector(".delete-note-info");
+
+      deleteNoteInfo.innerHTML = "";
+
+      let deleteTitle = document.createElement("div");
+      deleteTitle.className = "delete-note-title";
+      deleteTitle.id = "delete-note-title";
+
+      let deleteDesc = document.createElement("div");
+      deleteDesc.className = "delete-note-desc";
+      deleteDesc.id = "delete-note-desc";
+
+      deleteTitle.textContent = delTitle;
+      deleteDesc.textContent = delDesc;
+
+      deleteNoteInfo.appendChild(deleteTitle);
+      deleteNoteInfo.appendChild(deleteDesc);
+
+      currentEditId = Number(id);
+
+      deleteModal.classList.add("active");
+    }
+
+    // upclose look for notes
+    function openNote(openTitle, openDesc) {
+      const notesModal = document.getElementById("notes-modal");
+
+      const upcloseHead = document.querySelector(".upclose-heading");
+      const upcloseDesc = document.querySelector(".upclose-body");
+
+      upcloseHead.innerHTML = "";
+      upcloseDesc.innerHTML = "";
+
+      notesModal.classList.add("active");
+
+      let heading = document.createElement("h1");
+      heading.className = "upclose-title";
+
+      let desc = document.createElement("p");
+      desc.className = "upclose-desc";
+
+      heading.textContent = openTitle;
+      desc.textContent = openDesc;
+
+      upcloseHead.appendChild(heading);
+      upcloseDesc.appendChild(desc);
+
     }
 </script>
 </body>
